@@ -34,3 +34,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+# ICON CREDITS
+Vinyl Icon: https://www.flaticon.com/free-icon/vinyl_812680?term=vinyl+record&page=1&position=1&origin=tag&related_id=812680
+CD Icon: https://www.flaticon.com/free-icon/compact-disc_309078?term=cd&page=1&position=11&origin=search&related_id=309078
+Cassette: https://www.flaticon.com/free-icon/cassette-tape_3350617?term=cassette&page=1&position=1&origin=search&related_id=3350617
+Digital: https://www.flaticon.com/free-icon/mp3-file-format-symbol_28843?term=mp3&page=1&position=1&origin=search&related_id=28843
