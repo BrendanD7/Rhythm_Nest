@@ -31,3 +31,24 @@ body {
     text-wrap: balance;
   }
 }
+
+.linkButton {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #4a5568;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.linkButton:hover {
+  background-color: #2d3748;
+}
+
+.linkButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6d7d8c;
+}
+
