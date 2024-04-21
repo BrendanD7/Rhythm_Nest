@@ -1,16 +1,23 @@
-"use client";
-
-import React from 'react';
+"use client"
+import React, { useState } from 'react';
 import { InputLabel, FormControl, InputAdornment, Button, IconButton, Input, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { auth } from '../auth';
+import { useAuth } from '../context/AuthContext';
+
+enum AuthMode {
+    LOGIN = 'LOGIN',
+    SIGNUP = 'SIGNUP',
+}
 
 const LoginForm = () => {
     const router = useRouter();
-    const [showPassword, setShowPassword] = React.useState(false);
-    const [loginState, setLoginState] = React.useState({
+    const { logIn, signUp } = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
+    const [authMode, setAuthMode] = useState(AuthMode.LOGIN);
+    const [loginState, setLoginState] = useState({
         email: "",
         password: ""
     });
@@ -29,20 +36,36 @@ const LoginForm = () => {
         }));
     };
 
+    const handleVisibility = () => setShowPassword((show) => !show);
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log("Login successful!");
-        auth.isLoggedIn = true;
-        router.push('/collection');
+
+        try {
+            let result;
+            if (authMode === AuthMode.LOGIN) {
+                result = await logIn(loginState.email, loginState.password);
+            } else {
+                result = await signUp(loginState.email, loginState.password);
+            }
+            console.log("Authentication successful!");
+            auth.isLoggedIn = true;
+            router.push('/collection');
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred while authenticating.");
+        }
     };
 
-    const handleVisibility = () => setShowPassword((show) => !show);
+    const handleToggleMode = () => {
+        setAuthMode((mode) => (mode === AuthMode.LOGIN ? AuthMode.SIGNUP : AuthMode.LOGIN));
+    };
 
     return (
         <div className="relative mx-auto flex w-full max-w-[50%] flex-col space-y-2.5 p-4 md:-mt-32 flex items-center justify-center md:h-screen">
             <Paper elevation={3} style={{ margin: "auto", padding: "2rem" }}>
                 <Typography variant="h4" align="center" gutterBottom>
-                    Login
+                    {authMode === AuthMode.LOGIN ? 'Login' : 'Sign Up'}
                 </Typography>
                 <form className="space-y-3" onSubmit={handleSubmit}>
                     <FormControl required={true} fullWidth={true}>
@@ -78,10 +101,15 @@ const LoginForm = () => {
                     </FormControl>
                     <div style={{ display: "flex", justifyContent: "center" }}>
                         <Button type="submit" variant="contained" color="primary">
-                            Login
+                            {authMode === AuthMode.LOGIN ? 'Login' : 'Sign Up'}
                         </Button>
                     </div>
                 </form>
+                <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+                    <Button onClick={handleToggleMode} variant="contained" color="secondary">
+                        {authMode === AuthMode.LOGIN ? 'Sign Up' : 'Back to Login'}
+                    </Button>
+                </div>
             </Paper>
         </div>
     )

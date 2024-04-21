@@ -2,8 +2,19 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import logo from "../../../Logo.png";
+import { useAuth } from "../../../context/AuthContext";
+import {Button} from "@mui/material";
 
 const NavBar = () => {
+    const { logOut } = useAuth();
+
+    const handleSignout = async () => {
+        try {
+            await logOut(); 
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
+    };
     return (
         <div className="w-full h-20 bg-purple-800 stick top-0">
             <div className="container mx-auto px-4 h-full">
@@ -29,6 +40,9 @@ const NavBar = () => {
                             <Link href="/profile">
                                 <p className="linkButton">Profile</p>
                             </Link>
+                        </li>
+                        <li>
+                            <Button className="linkButton" variant="contained" color="error" onClick={handleSignout}>Sign out</Button>
                         </li>
                     </ul>
                 </div>
