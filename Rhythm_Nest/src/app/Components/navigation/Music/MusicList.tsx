@@ -1,16 +1,26 @@
 import React from "react";
 import MusicItem from "./album";
-import {MusicData} from "../../../collection/page";
-
+import { MusicData } from "../../../collection/page";
 
 interface MusicListProps {
-    musicList: MusicData[];
-    handleMusicItemClick: (album: MusicData) => void; 
+  musicList: MusicData[];
+  handleMusicItemClick: (album: MusicData) => void;
 }
 
-const MusicList: React.FC<MusicListProps> = ({ musicList, handleMusicItemClick }) => {
+const MusicList: React.FC<MusicListProps> = ({
+  musicList,
+  handleMusicItemClick,
+}) => {
   return (
-    <div style={{ width: "100%", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div
+      style={{
+        width: "100%",
+        maxWidth: "800px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       {musicList.length === 0 ? (
         <h1>No Music In Collection</h1>
       ) : (

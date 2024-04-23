@@ -1,5 +1,17 @@
-import React, {useState} from "react";
-import { Dialog, DialogTitle, DialogContent, TextField, Button, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel, DialogActions } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  FormControl,
+  InputLabel,
+  DialogActions,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface AddMusicDialogProps {
@@ -15,7 +27,14 @@ interface AddMusicDialogProps {
   onFormatChange: (event: SelectChangeEvent<string>) => void;
 }
 
-const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit, albumDetails, onInputChange, onFormatChange }) => {
+const AddMusicDialog: React.FC<AddMusicDialogProps> = ({
+  open,
+  onClose,
+  onSubmit,
+  albumDetails,
+  onInputChange,
+  onFormatChange,
+}) => {
   const [formValid, setFormValid] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +50,11 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit
 
   const checkFormValidity = () => {
     const { albumName, artistName, albumFormat } = albumDetails;
-    if (albumName.trim() !== "" && artistName.trim() !== "" && albumFormat.trim() !== "") {
+    if (
+      albumName.trim() !== "" &&
+      artistName.trim() !== "" &&
+      albumFormat.trim() !== ""
+    ) {
       setFormValid(true);
     } else {
       setFormValid(false);
@@ -47,17 +70,27 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit
   const handleClose = () => {
     setFormValid(false);
     onClose();
-  }
+  };
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <DialogTitle
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         Add New Album
-        <Button onClick={onClose} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
+        <Button
+          onClick={onClose}
+          color="primary"
+          style={{ minWidth: "unset", padding: "6px" }}
+        >
           <CloseIcon />
         </Button>
       </DialogTitle>
-      <DialogContent sx={{ paddingTop: '20px', textAlign: 'center' }}>
+      <DialogContent sx={{ paddingTop: "20px", textAlign: "center" }}>
         <TextField
           autoFocus
           margin="dense"
@@ -83,7 +116,10 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit
           InputLabelProps={{ required: false }}
           required={true}
         />
-        <FormControl fullWidth sx={{ marginBottom: '10px', marginTop: '10px', textAlign: 'left' }}>
+        <FormControl
+          fullWidth
+          sx={{ marginBottom: "10px", marginTop: "10px", textAlign: "left" }}
+        >
           <InputLabel id="albumFormat-label">Select Album Format</InputLabel>
           <Select
             id="albumFormat"
@@ -99,7 +135,12 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit
             <MenuItem value="Digital">Digital</MenuItem>
           </Select>
         </FormControl>
-        <Button onClick={handleSubmit} variant="contained" color="primary" disabled={!formValid}>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="primary"
+          disabled={!formValid}
+        >
           Add
         </Button>
       </DialogContent>

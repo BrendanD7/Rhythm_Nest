@@ -1,5 +1,12 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, TextField, Button, DialogActions } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Button,
+  DialogActions,
+} from "@mui/material";
 
 interface SearchDialogProps {
   open: boolean;
@@ -9,7 +16,13 @@ interface SearchDialogProps {
   onSearch: () => void;
 }
 
-const SearchDialog: React.FC<SearchDialogProps> = ({ open, onClose, searchQuery, onSearchInputChange, onSearch }) => {
+const SearchDialog: React.FC<SearchDialogProps> = ({
+  open,
+  onClose,
+  searchQuery,
+  onSearchInputChange,
+  onSearch,
+}) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle>Search</DialogTitle>
@@ -21,12 +34,16 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onClose, searchQuery,
           label="Search"
           fullWidth
           value={searchQuery}
-          onChange={onSearchInputChange}    
+          onChange={onSearchInputChange}
         />
       </DialogContent>
       <DialogActions style={{ justifyContent: "space-between" }}>
-        <Button onClick={onClose} variant="contained" color="error">Cancel</Button>
-        <Button onClick={onSearch} variant="contained" color="primary">Search</Button>
+        <Button onClick={onClose} variant="contained" color="error">
+          Cancel
+        </Button>
+        <Button onClick={onSearch} variant="contained" color="primary">
+          Search
+        </Button>
       </DialogActions>
     </Dialog>
   );
