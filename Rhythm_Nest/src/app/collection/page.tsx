@@ -6,7 +6,7 @@ import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button, Select, Men
 import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import { addAlbum, getUserCollection } from "../pages/api/collection";
+import { addAlbumCollection, getUserCollection } from "../pages/api/collection";
 
 export interface MusicData {
     albumCover: string;
@@ -75,7 +75,7 @@ const Collection = () => {
 
     const handleAddAlbumSubmit = async () => {
         if(user.uid !== null){
-            await addAlbum(albumDetails.albumName, albumDetails.artistName, albumFormat, user.uid);
+            await addAlbumCollection(albumDetails.albumName, albumDetails.artistName, albumFormat, user.uid);
             setOpenDialog(false);
             await fetchData();
         };
@@ -193,7 +193,7 @@ const Collection = () => {
                     <>
                         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             {selectedAlbum.albumName} - {selectedAlbum.artistName}
-                            <Button onClick={handleCloseDialog} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
+                            <Button onClick={handleCloseTracklist} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
                                 <CloseIcon />
                             </Button>
                         </DialogTitle>
