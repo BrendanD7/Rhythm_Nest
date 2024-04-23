@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { Dialog, DialogTitle, DialogContent, TextField, Button, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel, DialogActions } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -16,8 +16,41 @@ interface AddMusicDialogProps {
 }
 
 const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit, albumDetails, onInputChange, onFormatChange }) => {
+  const [formValid, setFormValid] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onInputChange(e);
+    checkFormValidity();
+  };
+
+  const handleFormatChange = (event: SelectChangeEvent<string>) => {
+    onFormatChange(event);
+    albumDetails.albumFormat = event.target.value;
+    checkFormValidity();
+  };
+
+  const checkFormValidity = () => {
+    const { albumName, artistName, albumFormat } = albumDetails;
+    if (albumName.trim() !== "" && artistName.trim() !== "" && albumFormat.trim() !== "") {
+      setFormValid(true);
+    } else {
+      setFormValid(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (formValid) {
+      onSubmit();
+    }
+  };
+
+  const handleClose = () => {
+    setFormValid(false);
+    onClose();
+  }
+
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={handleClose}>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         Add New Album
         <Button onClick={onClose} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
@@ -34,7 +67,8 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit
           fullWidth
           name="albumName"
           value={albumDetails.albumName}
-          onChange={onInputChange}
+          InputLabelProps={{ required: false }}
+          onChange={handleInputChange}
           required={true}
         />
         <TextField
@@ -45,7 +79,8 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit
           fullWidth
           name="artistName"
           value={albumDetails.artistName}
-          onChange={onInputChange}
+          onChange={handleInputChange}
+          InputLabelProps={{ required: false }}
           required={true}
         />
         <FormControl fullWidth sx={{ marginBottom: '10px', marginTop: '10px', textAlign: 'left' }}>
@@ -54,7 +89,7 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit
             id="albumFormat"
             labelId="albumFormat-label"
             value={albumDetails.albumFormat}
-            onChange={onFormatChange}
+            onChange={handleFormatChange}
             label="Select Album Format"
             required={true}
           >
@@ -64,7 +99,7 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({ open, onClose, onSubmit
             <MenuItem value="Digital">Digital</MenuItem>
           </Select>
         </FormControl>
-        <Button onClick={onSubmit} variant="contained" color="primary">
+        <Button onClick={handleSubmit} variant="contained" color="primary" disabled={!formValid}>
           Add
         </Button>
       </DialogContent>

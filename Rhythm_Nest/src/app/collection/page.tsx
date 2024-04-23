@@ -66,7 +66,12 @@ const Collection = () => {
     };
 
     const handleFormatChange = (event: SelectChangeEvent<string>) => {
-        setAlbumFormat(event.target.value);
+        const selectedFormat = event.target.value;
+        setAlbumFormat(selectedFormat);
+        setAlbumDetails(prevAlbumDetails => ({
+            ...prevAlbumDetails,
+            albumFormat: selectedFormat
+        }));
     };
     
 
