@@ -9,16 +9,18 @@ interface MusicItemProps {
   albumCover: string;
   albumName: string;
   artistName: string;
-  albumGenre: string;
+  releaseDate: string;
   albumFormat: string;
+  onClick: () => void;
 }
 
 const MusicItem: React.FC<MusicItemProps> = ({
   albumCover,
   albumName,
   artistName,
-  albumGenre,
-  albumFormat
+  releaseDate,
+  albumFormat,
+  onClick
 }) => {
     
   let formatImage;
@@ -41,12 +43,12 @@ const MusicItem: React.FC<MusicItemProps> = ({
       break;
   }
   return (
-    <div style={{ display: "flex", alignItems: "center", border: "1px solid white", padding: "1rem", borderRadius: "5px", width: "40rem", height: "auto", backgroundColor:"grey"}}>
+    <div onClick={onClick} style={{ display: "flex", alignItems: "center", border: "1px solid white", padding: "1rem", borderRadius: "5px", width: "40rem", height: "auto", backgroundColor:"grey"}}>
       <img src={albumCover} alt={albumName} style={{ width: "100px", height: "100px", marginRight: "10px" }} />
       <div>
         <p style={{ overflowWrap: "normal" }}><strong>Album:</strong> {albumName}</p>
         <p style={{ overflowWrap: "normal" }}><strong>Artist:</strong> {artistName}</p>
-        <p style={{ overflowWrap: "normal" }}><strong>Genre:</strong> {albumGenre}</p>
+        <p style={{ overflowWrap: "normal" }}><strong>Release Date:</strong> {releaseDate}</p>
       </div>
       <div style={{ marginLeft: "auto", paddingLeft: "30px" }}>
         {formatImage && <Image src={formatImage} alt={albumFormat} style={{ minWidth: "60px", minHeight: "60px", maxWidth: "60px", maxHeight: "60px"}} />}

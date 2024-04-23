@@ -2,24 +2,34 @@
 import React, { useState, useEffect } from "react";
 import MusicItem from "../Components/navigation/Music/album";
 import { useAuth } from "../context/AuthContext";
-import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button } from "@mui/material";
+import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel } from "@mui/material";
 import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+import { addAlbum, getUserCollection } from "../pages/api/collection";
 
-interface MusicData {
+export interface MusicData {
     albumCover: string;
     albumName: string;
     artistName: string;
-    albumGenre: string;
+    releaseDate: string;
     albumFormat: string;
+    tracklist: Track[];
+}
+
+interface Track{
+    name: string;
+    duration: string;
 }
 
 const Collection = () => {
     const [musicList, setMusicList] = useState<MusicData[]>([]);
+    const [albumFormat, setAlbumFormat] = useState<string>('');
     const { user } = useAuth();
     const router = useRouter();
     const [openDialog, setOpenDialog] = useState(false);
+    const [openTracklist, setOpenTracklist] = useState(false);
+    const [selectedAlbum, setSelectedAlbum] = useState<MusicData | null>(null);
     const [albumDetails, setAlbumDetails] = useState({
         albumName: "",
         artistName: "",
@@ -30,9 +40,30 @@ const Collection = () => {
         setOpenDialog(true);
     };
 
+    const handleMusicItemClick = (album: MusicData) => {
+        setSelectedAlbum(album as MusicData);
+        setOpenTracklist(true);
+    };
+
+    const handleCloseTracklist = () => {
+        setOpenTracklist(false);
+        setSelectedAlbum(null);
+    }
+
     const handleCloseDialog = () => {
         setOpenDialog(false);
+        setAlbumDetails({
+            albumName: "",
+            artistName: "",
+            albumFormat: "",
+        });
+        setAlbumFormat('');
     };
+
+    const handleFormatChange = (event: SelectChangeEvent<string>) => {
+        setAlbumFormat(event.target.value);
+    };
+    
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -42,27 +73,41 @@ const Collection = () => {
         }));
     };
 
-    const handleAddAlbumSubmit = () => {
-        // Add logic to submit album details to backend or perform any other action
-        console.log("Album details:", albumDetails);
-        setOpenDialog(false);
-    };
+    const handleAddAlbumSubmit = async () => {
+        if(user.uid !== null){
+            await addAlbum(albumDetails.albumName, albumDetails.artistName, albumFormat, user.uid);
+            setOpenDialog(false);
+            await fetchData();
+        };
+    }
+
+    async function fetchData() {
+        try {
+            if(user.uid !== null){
+                const data = getUserCollection(user.uid);
+                const arrayData = await data;
+                const convertedData: MusicData[] = arrayData.map(album => ({
+                    albumCover: album.albumCover,
+                    albumName: album.albumName,
+                    artistName: album.artistName,
+                    releaseDate: album.releaseDate,
+                    albumFormat: album.albumFormat,
+                    tracklist: album.tracklist
+                }));
+                setMusicList(convertedData);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
+        
 
     useEffect(() => {
         if(user.uid === null || user.email === null){
             router.push("/login");
         }
-        async function fetchData() {
-            try {
-                const response = await fetch("/api/collection");
-                const data = await response.json();
-                setMusicList(data);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
         fetchData();
-    }, [musicList]);
+    }, []);
 
     return (
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
@@ -76,8 +121,9 @@ const Collection = () => {
                           albumCover={item.albumCover}
                           albumName={item.albumName}
                           artistName={item.artistName}
-                          albumGenre={item.albumGenre}
+                          releaseDate={item.releaseDate}
                           albumFormat={item.albumFormat}
+                          onClick={() => handleMusicItemClick(item)}
                         />
                     ))
                 )}
@@ -108,6 +154,7 @@ const Collection = () => {
                       name="albumName"
                       value={albumDetails.albumName}
                       onChange={handleInputChange}
+                      required={true}
                     />
                     <TextField
                       margin="dense"
@@ -118,21 +165,49 @@ const Collection = () => {
                       name="artistName"
                       value={albumDetails.artistName}
                       onChange={handleInputChange}
+                      required={true}
                     />
-                    <TextField
-                      margin="dense"
-                      id="albumFormat"
-                      label="Album Format"
-                      type="text"
-                      fullWidth
-                      name="albumFormat"
-                      value={albumDetails.albumFormat}
-                      onChange={handleInputChange}
-                    />
+                    <FormControl fullWidth sx={{ marginBottom: '10px', marginTop: '10px', textAlign: 'left' }}>
+                    <InputLabel id="albumFormat-label">Select Album Format</InputLabel>
+                    <Select
+                        id="albumFormat"
+                        labelId="albumFormat-label"
+                        value={albumFormat}
+                        onChange={handleFormatChange}
+                        label="Select Album Format"
+                        required={true}
+                    >
+                    <MenuItem value = "Vinyl">Vinyl</MenuItem>
+                    <MenuItem value = "CD">CD</MenuItem>
+                    <MenuItem value = "Cassette">Cassette</MenuItem>
+                    <MenuItem value = "Digital">Digital</MenuItem>
+                    </Select>
+                    </FormControl>
                     <Button onClick={handleAddAlbumSubmit} variant="contained" color="primary">
                         Add
                     </Button>
                 </DialogContent>
+            </Dialog>
+            <Dialog open={openTracklist} onClose={handleCloseTracklist}>
+                {selectedAlbum && (
+                    <>
+                        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            {selectedAlbum.albumName} - {selectedAlbum.artistName}
+                            <Button onClick={handleCloseDialog} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
+                                <CloseIcon />
+                            </Button>
+                        </DialogTitle>
+                        <DialogContent>
+                            <ul style={{ listStyleType: 'none', padding: 0 }}>
+                                {selectedAlbum && selectedAlbum.tracklist.map((track, index) => (
+                                    <li key={index} style={{ background: '#f0f0f0', borderRadius: '5px', marginBottom: '5px', border: '1px solid #ccc', padding: '10px' }}>
+                                        {track.name} - {track.duration}
+                                    </li>
+                                ))}
+                            </ul>
+                        </DialogContent>
+                    </>
+                )}
             </Dialog>
         </div>
     );
