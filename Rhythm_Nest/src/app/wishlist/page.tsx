@@ -1,14 +1,15 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import MusicItem from "../Components/navigation/Music/album";
 import { useAuth } from "../context/AuthContext";
-import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel } from "@mui/material";
+import { Fab, SelectChangeEvent } from "@mui/material";
 import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
 import { addAlbumWishlist, getUserWishlist } from "../pages/api/collection"
 import MusicList from '../Components/navigation/Music/MusicList';
 import AddMusicDialog from "../Components/navigation/Music/AddMusic";
+import SearchDialog from "../Components/navigation/Music/Search";
+import SearchIcon from "@mui/icons-material/Search";
+import TracklistDialog from "../Components/navigation/Music/Tracklist";
 
 export interface MusicData {
     albumCover: string;
@@ -32,6 +33,8 @@ const Wishlist = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [openTracklist, setOpenTracklist] = useState(false);
     const [selectedAlbum, setSelectedAlbum] = useState<MusicData | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [openSearchDialog, setOpenSearchDialog] = useState(false);
     const [albumDetails, setAlbumDetails] = useState({
         albumName: "",
         artistName: "",
@@ -83,6 +86,24 @@ const Wishlist = () => {
         };
     }
 
+    const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(event.target.value);
+    };
+  
+    const handleSearch = () => {
+        filterMusic();
+        setOpenSearchDialog(false);
+    };
+
+    const handleSearchFabClick = () => {
+        setOpenSearchDialog(true);
+    };
+
+    const handleSearchFabClose = () => {
+        setOpenSearchDialog(false);
+    };
+
+
     async function fetchData() {
         try {
             if(user.uid !== null){
@@ -102,8 +123,21 @@ const Wishlist = () => {
             console.error("Error fetching data:", error);
         }
     }
-        
 
+    var filteredMusicList = musicList.filter(
+      (item) =>
+        item.albumName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.artistName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const filterMusic = () => {
+        filteredMusicList = musicList.filter(
+            (item) =>
+              item.albumName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              item.artistName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }
+          
     useEffect(() => {
         if(user.uid === null || user.email === null){
             router.push("/login");
@@ -114,13 +148,16 @@ const Wishlist = () => {
     return (
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
             <MusicList musicList={musicList} handleMusicItemClick={handleMusicItemClick} />
+            <Fab color="primary" aria-label="search" onClick={handleSearchFabClick} style={{ position: "absolute", bottom: "20px", left: "20px" }}>
+                <SearchIcon />
+            </Fab>
             <Fab
               color="primary"
               aria-label="add"
               style={{ position: "fixed", bottom: "20px", right: "20px" }}
               onClick={handleAddAlbum}
             >
-            <AddIcon />
+                <AddIcon />
             </Fab>
             <AddMusicDialog 
                 open={openDialog} 
@@ -130,27 +167,18 @@ const Wishlist = () => {
                 onInputChange={handleInputChange}
                 onFormatChange={handleFormatChange}
             />
-            <Dialog open={openTracklist} onClose={handleCloseTracklist}>
-                {selectedAlbum && (
-                    <>
-                        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            {selectedAlbum.albumName} - {selectedAlbum.artistName}
-                            <Button onClick={handleCloseTracklist} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
-                                <CloseIcon />
-                            </Button>
-                        </DialogTitle>
-                        <DialogContent>
-                            <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                {selectedAlbum && selectedAlbum.tracklist.map((track, index) => (
-                                    <li key={index} style={{ background: '#f0f0f0', borderRadius: '5px', marginBottom: '5px', border: '1px solid #ccc', padding: '10px' }}>
-                                        {track.name} - {track.duration}
-                                    </li>
-                                ))}
-                            </ul>
-                        </DialogContent>
-                    </>
-                )}
-            </Dialog>
+            <TracklistDialog 
+                open={openTracklist} 
+                onClose={handleCloseTracklist} 
+                selectedAlbum={selectedAlbum} 
+            />
+            <SearchDialog
+                open={openSearchDialog}
+                onClose={handleSearchFabClose}
+                searchQuery={searchQuery}
+                onSearchInputChange={handleSearchInputChange}
+                onSearch={handleSearch}
+            />
         </div>
     );
 };

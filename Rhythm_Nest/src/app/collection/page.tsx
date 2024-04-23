@@ -1,6 +1,5 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import MusicItem from "../Components/navigation/Music/album";
 import { useAuth } from "../context/AuthContext";
 import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel, DialogActions } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -10,6 +9,8 @@ import { addAlbumCollection, getUserCollection } from "../pages/api/collection";
 import SearchIcon from "@mui/icons-material/Search";
 import MusicList from "../Components/navigation/Music/MusicList";
 import AddMusicDialog from "../Components/navigation/Music/AddMusic";
+import SearchDialog from "../Components/navigation/Music/Search";
+import TracklistDialog from "../Components/navigation/Music/Tracklist";
 
 export interface MusicData {
     albumCover: string;
@@ -167,45 +168,18 @@ const Collection = () => {
                 onInputChange={handleInputChange}
                 onFormatChange={handleFormatChange}
             />
-            <Dialog open={openTracklist} onClose={handleCloseTracklist}>
-                {selectedAlbum && (
-                    <>
-                        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            {selectedAlbum.albumName} - {selectedAlbum.artistName}
-                            <Button onClick={handleCloseTracklist} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
-                                <CloseIcon />
-                            </Button>
-                        </DialogTitle>
-                        <DialogContent>
-                            <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                {selectedAlbum && selectedAlbum.tracklist.map((track, index) => (
-                                    <li key={index} style={{ background: '#f0f0f0', borderRadius: '5px', marginBottom: '5px', border: '1px solid #ccc', padding: '10px' }}>
-                                        {track.name} - {track.duration}
-                                    </li>
-                                ))}
-                            </ul>
-                        </DialogContent>
-                    </>
-                )}
-            </Dialog>
-            <Dialog open={openSearchDialog} onClose={handleSearchFabClose} fullWidth>
-                <DialogTitle>Search</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="search"
-                        label="Search"
-                        fullWidth
-                        value={searchQuery}
-                        onChange={handleSearchInputChange}    
-                    />
-                </DialogContent>
-                <DialogActions style={{ justifyContent: "space-between" }}>
-                    <Button onClick={handleSearchFabClose} variant="contained" color="error">Cancel</Button>
-                    <Button onClick={handleSearch} variant="contained" color="primary">Search</Button>
-                </DialogActions>
-            </Dialog>
+            <TracklistDialog 
+                open={openTracklist} 
+                onClose={handleCloseTracklist} 
+                selectedAlbum={selectedAlbum} 
+            />
+            <SearchDialog
+                open={openSearchDialog}
+                onClose={handleSearchFabClose}
+                searchQuery={searchQuery}
+                onSearchInputChange={handleSearchInputChange}
+                onSearch={handleSearch}
+            />
         </div>
     );
 };
