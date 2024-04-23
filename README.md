@@ -10,8 +10,10 @@ Additionally, you can add items to a wishlist that you wish to purchase in the f
 ## The Technologies
 Next.js
 - Next.js is a web development framework built off of React, which provides all of the features provided by React, alongside server-side rendering.
+
 TypeScript
 - TypeScript is an extension of JavaScript, a popular web development language, which adds features from static typed languages such as Java. This relieves many of JavaScripts issues with type conflicts, by ensuring variables always have the expected type.
+  
 # Author
 Brendan Doucette: UNB Software Engineering
 
