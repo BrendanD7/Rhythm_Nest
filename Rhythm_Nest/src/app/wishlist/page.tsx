@@ -137,10 +137,6 @@ const Wishlist = () => {
               item.artistName.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }
-    
-    const handleDeleteSuccess = () => {
-      fetchData();
-    };
           
     useEffect(() => {
         if(user.uid === null || user.email === null){

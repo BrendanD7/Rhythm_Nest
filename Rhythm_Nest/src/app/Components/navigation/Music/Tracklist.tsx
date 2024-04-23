@@ -1,6 +1,6 @@
 import React from "react";
 import { Dialog, DialogTitle, DialogContent, Button, Box } from "@mui/material";
-import {deleteItem} from "../../../pages/api/collection";
+import {deleteItem, transferToCatalogue} from "../../../pages/api/collection";
 
 interface TracklistDialogProps {
   open: boolean;
@@ -32,8 +32,12 @@ const TracklistDialog: React.FC<TracklistDialogProps> = ({ open, onClose, select
         onClose();
     };
 
-    const handleTransferToCollection = () => {
-    
+    const handleTransferToCollection = async () => {
+        if(selectedAlbum !== null && userUid !== null){
+            await transferToCatalogue(selectedAlbum.albumName, selectedAlbum.artistName, selectedAlbum.albumFormat, userUid);
+            onDeleteSuccess();
+        }
+        onClose();
     };
 
     return (

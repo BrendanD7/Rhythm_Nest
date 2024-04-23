@@ -154,3 +154,22 @@ export async function deleteItem(albumName: string, artistName: string, albumFor
     console.error("Error deleting item", error);
   }
 }
+
+export async function transferToCatalogue(albumName: string, artistName: string, albumFormat: string, userUid: string){
+  try{
+    const querySnapshot = await getDocs(collection(db, `Users/${userUid}/Wishlist`));
+    const itemToTransfer = querySnapshot.docs.find(doc => {
+      const data = doc.data();
+      return data.albumName === albumName && data.artistName === artistName && data.albumFormat === albumFormat;
+    });
+    if(!itemToTransfer){
+      console.error("Transfer Item not Found");
+      return;
+    }
+    const collectionRef = collection(db, `Users/${userUid}/Collection`);
+    await setDoc(doc(collectionRef, itemToTransfer.id), itemToTransfer.data());
+    await deleteDoc(itemToTransfer.ref);
+  }catch(error){
+    console.error("Error transferring item: ", error);
+  }
+}
