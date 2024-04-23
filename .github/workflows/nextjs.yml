@@ -84,6 +84,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }} \
           NEXT_PUBLIC_SPOTIFY_CLIENT_ID=${{ secrets.NEXT_PUBLIC_SPOTIFY_CLIENT_ID }} \
           NEXT_PUBLIC_CLIENT_SECRET=${{ secrets.NEXT_PUBLIC_CLIENT_SECRET }} \
+          echo $NEXT_PUBLIC_FIREBASE_API_KEY \ 
           ${{ steps.detect-package-manager.outputs.runner }} next build
           
       - name: Upload artifact
