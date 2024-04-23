@@ -6,7 +6,9 @@ import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button, Select, Men
 import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import { addAlbumWishlist, getUserWishlist } from "../pages/api/collection";
+import { addAlbumWishlist, getUserWishlist } from "../pages/api/collection"
+import MusicList from '../Components/navigation/Music/MusicList';
+import AddMusicDialog from "../Components/navigation/Music/AddMusic";
 
 export interface MusicData {
     albumCover: string;
@@ -111,23 +113,7 @@ const Wishlist = () => {
 
     return (
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-            <div style={{ width: "100%", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                {musicList.length === 0 ? (
-                    <h1>No Music In Wishlist</h1>
-                ) : (
-                    musicList.map((item, index) => (
-                        <MusicItem
-                          key={index}
-                          albumCover={item.albumCover}
-                          albumName={item.albumName}
-                          artistName={item.artistName}
-                          releaseDate={item.releaseDate}
-                          albumFormat={item.albumFormat}
-                          onClick={() => handleMusicItemClick(item)}
-                        />
-                    ))
-                )}
-            </div>
+            <MusicList musicList={musicList} handleMusicItemClick={handleMusicItemClick} />
             <Fab
               color="primary"
               aria-label="add"
@@ -136,58 +122,14 @@ const Wishlist = () => {
             >
             <AddIcon />
             </Fab>
-            <Dialog open={openDialog} onClose={handleCloseDialog}>
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    Add New Album
-                    <Button onClick={handleCloseDialog} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
-                        <CloseIcon />
-                    </Button>
-                </DialogTitle>
-                <DialogContent sx={{ paddingTop: '20px', textAlign: 'center' }}>
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      id="albumName"
-                      label="Album Name"
-                      type="text"
-                      fullWidth
-                      name="albumName"
-                      value={albumDetails.albumName}
-                      onChange={handleInputChange}
-                      required={true}
-                    />
-                    <TextField
-                      margin="dense"
-                      id="artistName"
-                      label="Artist Name"
-                      type="text"
-                      fullWidth
-                      name="artistName"
-                      value={albumDetails.artistName}
-                      onChange={handleInputChange}
-                      required={true}
-                    />
-                    <FormControl fullWidth sx={{ marginBottom: '10px', marginTop: '10px', textAlign: 'left' }}>
-                    <InputLabel id="albumFormat-label">Select Album Format</InputLabel>
-                    <Select
-                        id="albumFormat"
-                        labelId="albumFormat-label"
-                        value={albumFormat}
-                        onChange={handleFormatChange}
-                        label="Select Album Format"
-                        required={true}
-                    >
-                    <MenuItem value = "Vinyl">Vinyl</MenuItem>
-                    <MenuItem value = "CD">CD</MenuItem>
-                    <MenuItem value = "Cassette">Cassette</MenuItem>
-                    <MenuItem value = "Digital">Digital</MenuItem>
-                    </Select>
-                    </FormControl>
-                    <Button onClick={handleAddAlbumSubmit} variant="contained" color="primary">
-                        Add
-                    </Button>
-                </DialogContent>
-            </Dialog>
+            <AddMusicDialog 
+                open={openDialog} 
+                onClose={handleCloseDialog} 
+                onSubmit={handleAddAlbumSubmit} 
+                albumDetails={albumDetails} 
+                onInputChange={handleInputChange}
+                onFormatChange={handleFormatChange}
+            />
             <Dialog open={openTracklist} onClose={handleCloseTracklist}>
                 {selectedAlbum && (
                     <>

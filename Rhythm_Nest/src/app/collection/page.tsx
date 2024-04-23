@@ -2,11 +2,14 @@
 import React, { useState, useEffect } from "react";
 import MusicItem from "../Components/navigation/Music/album";
 import { useAuth } from "../context/AuthContext";
-import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel } from "@mui/material";
+import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel, DialogActions } from "@mui/material";
 import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { addAlbumCollection, getUserCollection } from "../pages/api/collection";
+import SearchIcon from "@mui/icons-material/Search";
+import MusicList from "../Components/navigation/Music/MusicList";
+import AddMusicDialog from "../Components/navigation/Music/AddMusic";
 
 export interface MusicData {
     albumCover: string;
@@ -30,6 +33,8 @@ const Collection = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [openTracklist, setOpenTracklist] = useState(false);
     const [selectedAlbum, setSelectedAlbum] = useState<MusicData | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [openSearchDialog, setOpenSearchDialog] = useState(false);
     const [albumDetails, setAlbumDetails] = useState({
         albumName: "",
         artistName: "",
@@ -100,7 +105,23 @@ const Collection = () => {
             console.error("Error fetching data:", error);
         }
     }
-        
+
+    const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+      };
+    
+    const handleSearch = () => {
+        filterMusic();
+        setOpenSearchDialog(false);
+    };
+
+    const handleSearchFabClick = () => {
+        setOpenSearchDialog(true);
+    };
+
+    const handleSearchFabClose = () => {
+        setOpenSearchDialog(false);
+    };
 
     useEffect(() => {
         if(user.uid === null || user.email === null){
@@ -109,85 +130,43 @@ const Collection = () => {
         fetchData();
     }, []);
 
+    var filteredMusicList = musicList.filter(
+        (item) =>
+          item.albumName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.artistName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const filterMusic = () => {
+        filteredMusicList = musicList.filter(
+            (item) =>
+              item.albumName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              item.artistName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }
+
     return (
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-            <div style={{ width: "100%", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                {musicList.length === 0 ? (
-                    <h1>No Music In Collection</h1>
-                ) : (
-                    musicList.map((item, index) => (
-                        <MusicItem
-                          key={index}
-                          albumCover={item.albumCover}
-                          albumName={item.albumName}
-                          artistName={item.artistName}
-                          releaseDate={item.releaseDate}
-                          albumFormat={item.albumFormat}
-                          onClick={() => handleMusicItemClick(item)}
-                        />
-                    ))
-                )}
-            </div>
+            <MusicList musicList={filteredMusicList} handleMusicItemClick={handleMusicItemClick} />
+            <Fab color="primary" aria-label="search" onClick={handleSearchFabClick} style={{ position: "absolute", bottom: "20px", left: "20px" }}>
+                <SearchIcon />
+            </Fab>
             <Fab
               color="primary"
               aria-label="add"
               style={{ position: "fixed", bottom: "20px", right: "20px" }}
               onClick={handleAddAlbum}
             >
-            <AddIcon />
+                <AddIcon />
             </Fab>
-            <Dialog open={openDialog} onClose={handleCloseDialog}>
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    Add New Album
-                    <Button onClick={handleCloseDialog} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
-                        <CloseIcon />
-                    </Button>
-                </DialogTitle>
-                <DialogContent sx={{ paddingTop: '20px', textAlign: 'center' }}>
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      id="albumName"
-                      label="Album Name"
-                      type="text"
-                      fullWidth
-                      name="albumName"
-                      value={albumDetails.albumName}
-                      onChange={handleInputChange}
-                      required={true}
-                    />
-                    <TextField
-                      margin="dense"
-                      id="artistName"
-                      label="Artist Name"
-                      type="text"
-                      fullWidth
-                      name="artistName"
-                      value={albumDetails.artistName}
-                      onChange={handleInputChange}
-                      required={true}
-                    />
-                    <FormControl fullWidth sx={{ marginBottom: '10px', marginTop: '10px', textAlign: 'left' }}>
-                    <InputLabel id="albumFormat-label">Select Album Format</InputLabel>
-                    <Select
-                        id="albumFormat"
-                        labelId="albumFormat-label"
-                        value={albumFormat}
-                        onChange={handleFormatChange}
-                        label="Select Album Format"
-                        required={true}
-                    >
-                    <MenuItem value = "Vinyl">Vinyl</MenuItem>
-                    <MenuItem value = "CD">CD</MenuItem>
-                    <MenuItem value = "Cassette">Cassette</MenuItem>
-                    <MenuItem value = "Digital">Digital</MenuItem>
-                    </Select>
-                    </FormControl>
-                    <Button onClick={handleAddAlbumSubmit} variant="contained" color="primary">
-                        Add
-                    </Button>
-                </DialogContent>
-            </Dialog>
+
+            <AddMusicDialog 
+                open={openDialog} 
+                onClose={handleCloseDialog} 
+                onSubmit={handleAddAlbumSubmit} 
+                albumDetails={albumDetails} 
+                onInputChange={handleInputChange}
+                onFormatChange={handleFormatChange}
+            />
             <Dialog open={openTracklist} onClose={handleCloseTracklist}>
                 {selectedAlbum && (
                     <>
@@ -208,6 +187,24 @@ const Collection = () => {
                         </DialogContent>
                     </>
                 )}
+            </Dialog>
+            <Dialog open={openSearchDialog} onClose={handleSearchFabClose} fullWidth>
+                <DialogTitle>Search</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="search"
+                        label="Search"
+                        fullWidth
+                        value={searchQuery}
+                        onChange={handleSearchInputChange}    
+                    />
+                </DialogContent>
+                <DialogActions style={{ justifyContent: "space-between" }}>
+                    <Button onClick={handleSearchFabClose} variant="contained" color="error">Cancel</Button>
+                    <Button onClick={handleSearch} variant="contained" color="primary">Search</Button>
+                </DialogActions>
             </Dialog>
         </div>
     );
