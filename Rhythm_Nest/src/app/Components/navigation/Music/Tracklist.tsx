@@ -1,15 +1,20 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, Button } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Button, Box } from "@mui/material";
+import {deleteItem} from "../../../pages/api/collection";
 
 interface TracklistDialogProps {
   open: boolean;
   onClose: () => void;
   selectedAlbum: MusicData | null;
+  userUid: string | null;
+  location: string;
+  onDeleteSuccess: () => void;
 }
 
 interface MusicData {
   albumName: string;
   artistName: string;
+  albumFormat: string;
   tracklist: Track[];
 }
 
@@ -18,14 +23,21 @@ interface Track {
   duration: string;
 }
 
-const TracklistDialog: React.FC<TracklistDialogProps> = ({ open, onClose, selectedAlbum }) => {
+const TracklistDialog: React.FC<TracklistDialogProps> = ({ open, onClose, selectedAlbum, userUid, location, onDeleteSuccess }) => {
+    const handleRemove = async () => {
+        if(selectedAlbum !== null && userUid !== null){
+            await deleteItem(selectedAlbum.albumName, selectedAlbum.artistName, selectedAlbum.albumFormat, userUid, location);
+            onDeleteSuccess();
+        }
+        onClose();
+    };
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth>
       {selectedAlbum && (
         <>
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             {selectedAlbum.albumName} - {selectedAlbum.artistName}
-            <Button onClick={onClose} color="primary" style={{ minWidth: 'unset', padding: '6px' }}>
+            <Button onClick={onClose} color="primary" variant="contained" style={{ minWidth: 'unset', padding: '6px', marginLeft:"10px"}}>
               Close
             </Button>
           </DialogTitle>
@@ -37,6 +49,9 @@ const TracklistDialog: React.FC<TracklistDialogProps> = ({ open, onClose, select
                 </li>
               ))}
             </ul>
+            <Box display="flex" justifyContent="center">
+              <Button variant="contained" color="error" onClick={handleRemove} style={{ marginTop: "10px" }}>Delete</Button>
+            </Box>
           </DialogContent>
         </>
       )}

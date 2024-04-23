@@ -16,11 +16,13 @@ const NavBar = () => {
         }
     };
     return (
-        <div className="w-full h-20 bg-purple-800 stick top-0">
-            <div className="container mx-auto px-4 h-full">
-                <div className="flex justify-between items-center h-full">
-                    <Image src={logo} alt="Rhythm Nest" width={75}/>
-                    <ul className="hidden md:flex gap-x-6 text-white">
+        <div className="bg-purple-800">
+            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                <div className="flex items-center">
+                    <Image src={logo} alt="Rhythm Nest" width={75} height={75}/>
+                    <h1 className="text-white text-xl font-bold ml-4">Rhythm Nest</h1>
+                </div>
+                <ul className="flex gap-x-6 text-white">
                         <li>
                             <Link href="/collection">
                                 <p className="linkButton">Collection</p>
@@ -45,7 +47,6 @@ const NavBar = () => {
                             <Button className="linkButton" variant="contained" color="error" onClick={handleSignout}>Sign out</Button>
                         </li>
                     </ul>
-                </div>
             </div>
         </div>
     );

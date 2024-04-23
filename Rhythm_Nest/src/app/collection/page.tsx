@@ -1,10 +1,9 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Fab, Dialog, DialogTitle, DialogContent, TextField, Button, Select, MenuItem, SelectChangeEvent, FormControl, InputLabel, DialogActions } from "@mui/material";
+import { Fab, Typography, SelectChangeEvent} from "@mui/material";
 import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
 import { addAlbumCollection, getUserCollection } from "../pages/api/collection";
 import SearchIcon from "@mui/icons-material/Search";
 import MusicList from "../Components/navigation/Music/MusicList";
@@ -147,7 +146,12 @@ const Collection = () => {
 
     return (
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-            <MusicList musicList={filteredMusicList} handleMusicItemClick={handleMusicItemClick} />
+            <div>
+                <Typography variant="h3" gutterBottom style={{textAlign: "center"}}>
+                    Collection
+                </Typography>
+                <MusicList musicList={filteredMusicList} handleMusicItemClick={handleMusicItemClick} />
+            </div>
             <Fab color="primary" aria-label="search" onClick={handleSearchFabClick} style={{ position: "absolute", bottom: "20px", left: "20px" }}>
                 <SearchIcon />
             </Fab>
@@ -172,6 +176,9 @@ const Collection = () => {
                 open={openTracklist} 
                 onClose={handleCloseTracklist} 
                 selectedAlbum={selectedAlbum} 
+                userUid={user.uid}
+                location={"Collection"}
+                onDeleteSuccess={fetchData} 
             />
             <SearchDialog
                 open={openSearchDialog}

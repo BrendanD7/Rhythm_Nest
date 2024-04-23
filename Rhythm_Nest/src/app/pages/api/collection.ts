@@ -1,5 +1,5 @@
 import firebase_app from "../../firebase/config";
-import { getFirestore, collection, doc, setDoc, query, getDocs } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, query, getDocs, deleteDoc } from "firebase/firestore";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 const db = getFirestore(firebase_app);
@@ -138,4 +138,19 @@ export async function addAlbumWishlist(albumName: string, artistName: string, al
   const userCollectionRef = collection(db, `Users/${userUid}/Wishlist`);
   const newAlbumRef = doc(userCollectionRef);
   await setDoc(newAlbumRef, albumData);
+}
+
+export async function deleteItem(albumName: string, artistName: string, albumFormat: string, userUid: string, location: string){
+  try{
+    let collectionRef = collection(db, `Users/${userUid}/${location}`);
+    const querySnapshot = await getDocs(collectionRef);
+    querySnapshot.forEach(async (doc) => {
+      const data = doc.data();
+      if(data.albumName === albumName && data.artistName === artistName && data.albumFormat === albumFormat){
+        await deleteDoc(doc.ref);
+      }
+    });
+  }catch(error){
+    console.error("Error deleting item", error);
+  }
 }

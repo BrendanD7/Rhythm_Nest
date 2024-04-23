@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Fab, SelectChangeEvent } from "@mui/material";
+import { Fab, SelectChangeEvent, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
 import { addAlbumWishlist, getUserWishlist } from "../pages/api/collection"
@@ -137,6 +137,10 @@ const Wishlist = () => {
               item.artistName.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }
+    
+    const handleDeleteSuccess = () => {
+      fetchData();
+    };
           
     useEffect(() => {
         if(user.uid === null || user.email === null){
@@ -147,7 +151,12 @@ const Wishlist = () => {
 
     return (
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-            <MusicList musicList={musicList} handleMusicItemClick={handleMusicItemClick} />
+          <div>
+              <Typography variant="h3" gutterBottom style={{textAlign: "center"}}>
+                Wishlist
+              </Typography>
+              <MusicList musicList={filteredMusicList} handleMusicItemClick={handleMusicItemClick}/>
+          </div>
             <Fab color="primary" aria-label="search" onClick={handleSearchFabClick} style={{ position: "absolute", bottom: "20px", left: "20px" }}>
                 <SearchIcon />
             </Fab>
@@ -171,6 +180,9 @@ const Wishlist = () => {
                 open={openTracklist} 
                 onClose={handleCloseTracklist} 
                 selectedAlbum={selectedAlbum} 
+                userUid={user.uid}
+                location={"Wishlist"}
+                onDeleteSuccess={fetchData} 
             />
             <SearchDialog
                 open={openSearchDialog}
