@@ -22,10 +22,15 @@ const NavBar = () => {
   };
 
   /** If the user is not logged in, don't show the navbar */
-  if(!user.isLoggedIn) return null;
-  
+  if (!user.isLoggedIn) return null;
+
+  /** Define the gradient background */
+  const navbarStyle = {
+    background: "linear-gradient(to right, #8e2de2, #4a00e0)"
+  };
+
   return (
-    <div className="bg-purple-800">
+    <div style={navbarStyle}>
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center">
           <Image src={logo} alt="Rhythm Nest" width={75} height={75} />

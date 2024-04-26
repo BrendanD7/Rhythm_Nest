@@ -52,3 +52,7 @@ body {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6d7d8c;
 }
 
+.bg-purple-gradient {
+  background: linear-gradient(to right, #8e2de2, #4a00e0);
+}
+
