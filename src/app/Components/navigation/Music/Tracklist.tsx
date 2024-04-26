@@ -31,6 +31,7 @@ const TracklistDialog: React.FC<TracklistDialogProps> = ({
   location,
   onDeleteSuccess,
 }) => {
+  /** Delete item from database */
   const handleRemove = async () => {
     if (selectedAlbum !== null && userUid !== null) {
       await deleteItem(
@@ -45,6 +46,7 @@ const TracklistDialog: React.FC<TracklistDialogProps> = ({
     onClose();
   };
 
+  /** Transfer item from wishlist to collection */
   const handleTransferToCollection = async () => {
     if (selectedAlbum !== null && userUid !== null) {
       await transferToCatalogue(

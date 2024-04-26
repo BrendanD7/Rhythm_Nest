@@ -11,6 +11,7 @@ import SearchDialog from "../Components/navigation/Music/Search";
 import SearchIcon from "@mui/icons-material/Search";
 import TracklistDialog from "../Components/navigation/Music/Tracklist";
 
+/** Parameters for an album */
 export interface MusicData {
   albumCover: string;
   albumName: string;
@@ -20,12 +21,14 @@ export interface MusicData {
   tracklist: Track[];
 }
 
+/** Parameters for a track */
 interface Track {
   name: string;
   duration: string;
 }
 
 const Wishlist = () => {
+  /** Hooks */
   const [musicList, setMusicList] = useState<MusicData[]>([]);
   const [albumFormat, setAlbumFormat] = useState<string>("");
   const { user } = useAuth();
@@ -41,20 +44,24 @@ const Wishlist = () => {
     albumFormat: "",
   });
 
+  /** Open add FAB dialog */
   const handleAddAlbum = () => {
     setOpenDialog(true);
   };
 
+  /** Music item clicked, open tracklist */
   const handleMusicItemClick = (album: MusicData) => {
     setSelectedAlbum(album as MusicData);
     setOpenTracklist(true);
   };
 
+  /** Close the tracklist */
   const handleCloseTracklist = () => {
     setOpenTracklist(false);
     setSelectedAlbum(null);
   };
 
+  /** Close the add FAB dialog and reset inputs */
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setAlbumDetails({
@@ -65,10 +72,12 @@ const Wishlist = () => {
     setAlbumFormat("");
   };
 
+  /** Handle selection from the format combobox */
   const handleFormatChange = (event: SelectChangeEvent<string>) => {
     setAlbumFormat(event.target.value);
   };
 
+  /** Handle a change in the add FAB parameters */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAlbumDetails((prevState) => ({
@@ -77,6 +86,7 @@ const Wishlist = () => {
     }));
   };
 
+  /** Handle submission of add music form, save the album to the database */
   const handleAddAlbumSubmit = async () => {
     if (user.uid !== null) {
       await addAlbumWishlist(
@@ -90,25 +100,30 @@ const Wishlist = () => {
     }
   };
 
+  /** Handle a change in the Search Fab dialog text field */
   const handleSearchInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setSearchQuery(event.target.value);
   };
 
+  /** Filter the music with the provided search term */
   const handleSearch = () => {
     filterMusic();
     setOpenSearchDialog(false);
   };
 
+  /** Open the search dialog */
   const handleSearchFabClick = () => {
     setOpenSearchDialog(true);
   };
 
+  /** Close the search dialog */
   const handleSearchFabClose = () => {
     setOpenSearchDialog(false);
   };
 
+  /** Fetch the users wishlist from the database */
   async function fetchData() {
     try {
       if (user.uid !== null) {
@@ -129,12 +144,12 @@ const Wishlist = () => {
     }
   }
 
+  /** Filter of the music list for searching */
   var filteredMusicList = musicList.filter(
     (item) =>
       item.albumName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.artistName.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   const filterMusic = () => {
     filteredMusicList = musicList.filter(
       (item) =>
@@ -143,6 +158,7 @@ const Wishlist = () => {
     );
   };
 
+  /** If the user is not logged in, transfer to login page */
   useEffect(() => {
     if (user.uid === null || user.email === null) {
       router.push("/login");

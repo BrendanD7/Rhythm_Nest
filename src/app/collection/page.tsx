@@ -26,6 +26,7 @@ interface Track {
 }
 
 const Collection = () => {
+  /** Hooks */
   const [musicList, setMusicList] = useState<MusicData[]>([]);
   const [albumFormat, setAlbumFormat] = useState<string>("");
   const { user } = useAuth();
@@ -41,20 +42,24 @@ const Collection = () => {
     albumFormat: "",
   });
 
+  /** Add FAB Pressed */
   const handleAddAlbum = () => {
     setOpenDialog(true);
   };
 
+  /** Music Item Clicked */
   const handleMusicItemClick = (album: MusicData) => {
     setSelectedAlbum(album as MusicData);
     setOpenTracklist(true);
   };
 
+  /** Close Music Item */
   const handleCloseTracklist = () => {
     setOpenTracklist(false);
     setSelectedAlbum(null);
   };
 
+  /** Close add FAB dialog */
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setAlbumDetails({
@@ -65,6 +70,7 @@ const Collection = () => {
     setAlbumFormat("");
   };
 
+  /** Handle selection in combobox for album format */
   const handleFormatChange = (event: SelectChangeEvent<string>) => {
     const selectedFormat = event.target.value;
     setAlbumFormat(selectedFormat);
@@ -74,6 +80,7 @@ const Collection = () => {
     }));
   };
 
+  /** Handle chambe in input for name/artist */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAlbumDetails((prevState) => ({
@@ -82,6 +89,7 @@ const Collection = () => {
     }));
   };
 
+  /** When the user has submitted the album, write it to the database */
   const handleAddAlbumSubmit = async () => {
     if (user.uid !== null) {
       await addAlbumCollection(
@@ -95,6 +103,7 @@ const Collection = () => {
     }
   };
 
+  /** Fetch collection from database */
   async function fetchData() {
     try {
       if (user.uid !== null) {
@@ -115,25 +124,30 @@ const Collection = () => {
     }
   }
 
+  /** Search FAB Input changed */
   const handleSearchInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setSearchQuery(event.target.value);
   };
 
+  /** Search Submitted */
   const handleSearch = () => {
     filterMusic();
     setOpenSearchDialog(false);
   };
 
+  /** Search FAB Button clicked */
   const handleSearchFabClick = () => {
     setOpenSearchDialog(true);
   };
 
+  /** Search FAB Closed */
   const handleSearchFabClose = () => {
     setOpenSearchDialog(false);
   };
 
+  /** If the user is not logged in, go to login page */
   useEffect(() => {
     if (user.uid === null || user.email === null) {
       router.push("/login");
@@ -141,12 +155,12 @@ const Collection = () => {
     fetchData();
   }, []);
 
+  /** Filter for searching within the music list */
   var filteredMusicList = musicList.filter(
     (item) =>
       item.albumName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.artistName.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   const filterMusic = () => {
     filteredMusicList = musicList.filter(
       (item) =>

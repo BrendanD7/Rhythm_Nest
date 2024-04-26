@@ -4,17 +4,26 @@ import Image from "next/image";
 import logo from "../../../Logo.png";
 import { useAuth } from "../../../context/AuthContext";
 import { Button } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 const NavBar = () => {
-  const { logOut } = useAuth();
+  /** Hooks */
+  const { logOut, user } = useAuth();
+  const router = useRouter();
 
+  /** Handle signing the user out, on pressing signout */
   const handleSignout = async () => {
     try {
       await logOut();
+      router.push("/login");
     } catch (error) {
       console.error("Error signing out:", error);
     }
   };
+
+  /** If the user is not logged in, don't show the navbar */
+  if(!user.isLoggedIn) return null;
+  
   return (
     <div className="bg-purple-800">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">

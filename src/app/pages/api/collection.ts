@@ -15,6 +15,7 @@ const db = getFirestore(firebase_app);
 const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "";
 const clientSecret = process.env.NEXT_PUBLIC_CLIENT_SECRET || "";
 
+/** Album Parameters */
 interface Album {
   albumName: string;
   artistName: string;
@@ -24,6 +25,7 @@ interface Album {
   tracklist: Track[];
 }
 
+/** Track parameters */
 interface Track {
   name: string;
   duration: string;
@@ -35,6 +37,7 @@ export const spotifyApi = SpotifyApi.withClientCredentials(
   clientSecret
 );
 
+/** Retrieve the users collection */
 export async function getUserCollection(uid: string) {
   try {
     const userCollectionRef = collection(db, `Users/${uid}/Collection`);
@@ -53,6 +56,7 @@ export async function getUserCollection(uid: string) {
   }
 }
 
+/** Retrieve the users wishlist */
 export async function getUserWishlist(uid: string) {
   try {
     const userCollectionRef = collection(db, `Users/${uid}/Wishlist`);
@@ -71,6 +75,7 @@ export async function getUserWishlist(uid: string) {
   }
 }
 
+/** Add an album to the collection */
 export async function addAlbumCollection(
   albumName: string,
   artistName: string,
@@ -114,6 +119,7 @@ export async function addAlbumCollection(
   await setDoc(newAlbumRef, albumData);
 }
 
+/** Add an album to the wishlist */
 export async function addAlbumWishlist(
   albumName: string,
   artistName: string,
@@ -157,6 +163,7 @@ export async function addAlbumWishlist(
   await setDoc(newAlbumRef, albumData);
 }
 
+/** Delete an item from the database */
 export async function deleteItem(
   albumName: string,
   artistName: string,
@@ -182,6 +189,7 @@ export async function deleteItem(
   }
 }
 
+/** Transfer a music item from the wishlist to the collection */
 export async function transferToCatalogue(
   albumName: string,
   artistName: string,

@@ -5,6 +5,7 @@ import cdImage from "./Format/compact-disc.png";
 import digitalImage from "./Format/mp3.png";
 import cassetteImage from "./Format/cassette-tape.png";
 
+/** Props for a Music Item */
 interface MusicItemProps {
   albumCover: string;
   albumName: string;
@@ -24,7 +25,7 @@ const MusicItem: React.FC<MusicItemProps> = ({
 }) => {
     
   let formatImage;
-
+  /** Switch statement to select image for album format */
   switch (albumFormat.toLowerCase()) {
     case "vinyl":
       formatImage = vinylImage;

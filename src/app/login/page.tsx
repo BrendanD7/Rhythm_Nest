@@ -7,12 +7,14 @@ import { useRouter } from 'next/navigation';
 import { auth } from '../auth';
 import { useAuth } from '../context/AuthContext';
 
+/** Auth Types */
 enum AuthMode {
     LOGIN = 'LOGIN',
     SIGNUP = 'SIGNUP',
 }
 
 const LoginForm = () => {
+    /** Hooks */
     const router = useRouter();
     const { logIn, signUp } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +24,7 @@ const LoginForm = () => {
         password: ""
     });
 
+    /** Handle input change to email */
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setLoginState(prevState => ({
             ...prevState,
@@ -29,6 +32,7 @@ const LoginForm = () => {
         }));
     };
 
+    /** Handle input change to password */
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setLoginState(prevState => ({
             ...prevState,
@@ -36,8 +40,10 @@ const LoginForm = () => {
         }));
     };
 
+    /** Handle displaying or hiding password */
     const handleVisibility = () => setShowPassword((show) => !show);
 
+    /** On submission of the form, attempt to signin or create an account */
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -57,6 +63,7 @@ const LoginForm = () => {
         }
     };
 
+    /** Password visibility button pressed */
     const handleToggleMode = () => {
         setAuthMode((mode) => (mode === AuthMode.LOGIN ? AuthMode.SIGNUP : AuthMode.LOGIN));
     };

@@ -7,6 +7,7 @@ const auth = getAuth(firebase_app);
 interface UserType {
   email: string | null;
   uid: string | null;
+  isLoggedIn: boolean;
 }
 
 interface AuthContextType {
@@ -16,8 +17,9 @@ interface AuthContextType {
   logOut: () => Promise<void>;
 }
 
+/** Setup the authentication context */
 export const AuthContext = createContext<AuthContextType>({
-  user: { email: null, uid: null },
+  user: { email: null, uid: null, isLoggedIn: false },
   logIn: async (email: string, password: string) => {
     throw new Error("logIn function not implemented");
   },
@@ -30,27 +32,32 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 
+/** Configure auth */
 export const useAuth = () => useContext(AuthContext);
 
+/** Provider for Auth */
 export const AuthContextProvider = ({
   children
 }: {
   children: React.ReactNode;
 }) => {
-  const [user, setUser] = useState<UserType>({ email: null, uid: null });
+  const [user, setUser] = useState<UserType>({ email: null, uid: null, isLoggedIn: false });
   const [loading, setLoading] = useState<boolean>(true);
 
+  /** Setup hooks to update user state */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       if (authUser) {
         setUser({
           email: authUser.email,
-          uid: authUser.uid
+          uid: authUser.uid,
+          isLoggedIn: true
         });
       } else {
         setUser({
           email: null,
-          uid: null
+          uid: null,
+          isLoggedIn: false
         });
       }
       setLoading(false);
@@ -59,7 +66,7 @@ export const AuthContextProvider = ({
     return () => unsubscribe();
   }, []);
 
-  // Login the user
+  /** Attempt to log the user in */
   const logIn = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -72,12 +79,13 @@ export const AuthContextProvider = ({
     }
   };
 
+  /** Attempt to log the user out */
   const logOut = async () => {
-    setUser({ email: null, uid: null });
+    setUser({ email: null, uid: null, isLoggedIn: false });
     return await signOut(auth);
   };
 
-  // Sign up the user
+  /** Create an account for the user given an email and a password */
   const signUp = async (email: string, password: string) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);

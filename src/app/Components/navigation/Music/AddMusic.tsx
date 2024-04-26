@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
+/** Props to AddMusic Component */
 interface AddMusicDialogProps {
   open: boolean;
   onClose: () => void;
@@ -37,17 +38,20 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({
 }) => {
   const [formValid, setFormValid] = useState(false);
 
+  /** Handle Change in inputs */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onInputChange(e);
     checkFormValidity();
   };
 
+  /** Handle the format being changed in the combobox */
   const handleFormatChange = (event: SelectChangeEvent<string>) => {
     onFormatChange(event);
     albumDetails.albumFormat = event.target.value;
     checkFormValidity();
   };
 
+  /** Check the validity of the form contents (Must all be filled) */
   const checkFormValidity = () => {
     const { albumName, artistName, albumFormat } = albumDetails;
     if (
@@ -61,12 +65,14 @@ const AddMusicDialog: React.FC<AddMusicDialogProps> = ({
     }
   };
 
+  /** Handle submission of music item */
   const handleSubmit = () => {
     if (formValid) {
       onSubmit();
     }
   };
 
+  /** Close Add Music Dialog */
   const handleClose = () => {
     setFormValid(false);
     onClose();
